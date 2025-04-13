@@ -46,3 +46,9 @@ class User extends Authenticatable
         ];
     }
 }
+
+public function empleado()
+{
+    return $this->hasOne(Empleado::class);
+}
+

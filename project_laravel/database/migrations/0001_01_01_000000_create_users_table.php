@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            php artisan make:migration create_roles_table
+
+            $table->enum('tipo', ['SuperAdmin', 'Administrador', 'Empleado'])->default('Empleado');
             $table->rememberToken();
             $table->timestamps();
         });
@@ -35,6 +37,21 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->timestamps();
+        });
+
+        Schema::create('empleados', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('role_id')->constrained('roles');
+            $table->timestamps();
+        });
+        
+        
     }
 
     /**

@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                <h1>Bienvenido, Super Admin {{ $user->name }}</h1>
+                <h1>Bienvenido, Super Admin</h1>
                 <p>Aquí irá el contenido del Dashboard para el SuperAdmin.</p>
 
                 </div>

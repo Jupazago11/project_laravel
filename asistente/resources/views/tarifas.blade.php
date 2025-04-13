@@ -6,8 +6,8 @@
     <title>Inicio</title>
 </head>
 <body>
-    <h1>Página de inicio</h1>
-    <a href="{{ route('tarifas') }}">Tarifas</a> |
-    <a href="{{ route('login') }}">Login</a>
+    <!-- resources/views/tarifas.blade.php -->
+    <h1>Página de Tarifas</h1>
+    <p>Aquí puedes mostrar tus planes o precios.</p>
 </body>
 </html>

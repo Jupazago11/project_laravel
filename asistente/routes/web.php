@@ -20,56 +20,50 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/tarifas', function () {
+    return view('tarifas');
+})->name('tarifas');
 
-
-Route::middleware(['auth','superadmin'])->group(function () {
+// ──────────────────────────────────────────────────────────────────────────
+// Quitar 'superadmin' y dejar sólo 'auth'
+Route::middleware(['auth'])->group(function () {
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'index'])
          ->name('superadmin.dashboard');
 });
 
-
-
-Route::middleware(['auth', 'adminnegocio'])->group(function () {
-
-    // Pantalla de selección de empresa
-    Route::get('/adminnegocio/seleccion-empresa', 
+// ──────────────────────────────────────────────────────────────────────────
+// Quitar 'adminnegocio' y dejar sólo 'auth'
+Route::middleware('auth')->group(function () {
+    Route::get('/adminnegocio/seleccion-empresa',
         [AdminNegocioController::class, 'seleccionEmpresa']
     )->name('adminnegocio.seleccion-empresa');
 
-    // Formulario para crear nueva empresa
-    Route::get('/adminnegocio/crear-empresa', 
+    Route::get('/adminnegocio/crear-empresa',
         [AdminNegocioController::class, 'crearEmpresaForm']
     )->name('adminnegocio.crear-empresa');
 
-    // Guardar la empresa en la BD
-    Route::post('/adminnegocio/crear-empresa', 
+    Route::post('/adminnegocio/crear-empresa',
         [AdminNegocioController::class, 'storeEmpresa']
     )->name('adminnegocio.store-empresa');
 
-    // Dashboard de la empresa seleccionada
-    Route::get('/adminnegocio/dashboard/{empresa}', 
+    Route::get('/adminnegocio/dashboard/{empresa}',
         [AdminNegocioController::class, 'dashboard']
     )->name('adminnegocio.dashboard');
 });
 
-
-Route::middleware(['auth', 'adminnegocio'])->group(function () {
-
+// Empleados (adminnegocio)
+Route::middleware('auth')->group(function () {
     Route::get('/empleados/crear', [EmpleadoController::class, 'create'])
          ->name('empleados.create');
 
     Route::post('/empleados', [EmpleadoController::class, 'store'])
          ->name('empleados.store');
-
-    // Aquí podrías poner rutas para listar empleados, editarlos, etc.
 });
 
-Route::middleware(['auth'])->group(function () {
+// Empleado dashboard
+Route::middleware('auth')->group(function () {
     Route::get('/empleado/dashboard', [EmpleadoController::class, 'dashboard'])
          ->name('empleado.dashboard');
 });
-
-
-
 
 require __DIR__.'/auth.php';

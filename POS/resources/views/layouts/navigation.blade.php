@@ -11,11 +11,45 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                    
+
+                    @if(Auth::check())
+                        @switch(Auth::user()->type_user_id)
+                            @case(1)
+                            <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link> 
+                                <!-- Super Administrador: se muestra el enlace Users -->
+                                <x-nav-link :href="route('superadmin.users')" :active="request()->routeIs('superadmin.users')">
+                                    {{ __('Users') }}
+                                </x-nav-link>
+                                @break
+
+                            @case(2)
+                                <!-- Administrador -->
+                                <x-nav-link :href="route('administrador.dashboard')" :active="request()->routeIs('administrador.dashboard')">
+                                    {{ __('Dashboard') }}
+                                </x-nav-link> 
+                                <x-nav-link :href="route('administrador.users')" :active="request()->routeIs('administrador.users')">
+                                    {{ __('Users') }}
+                                </x-nav-link>
+                                @break
+
+                            @default
+                                @if(Auth::user()->type_user_id >= 3)
+                                    <!-- Empleado -->
+                                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                        {{ __('Dashboard') }}
+                                    </x-nav-link> 
+                                    <x-nav-link :href="route('dashboard.empleado')" :active="request()->routeIs('dashboard.empleado')">
+                                        {{ __('Empleado') }}
+                                    </x-nav-link>
+                                @endif
+                        @endswitch
+                    @endif
                 </div>
+
             </div>
 
             <!-- Settings Dropdown -->

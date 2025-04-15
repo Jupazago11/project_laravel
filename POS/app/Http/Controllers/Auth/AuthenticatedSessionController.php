@@ -23,7 +23,6 @@ class AuthenticatedSessionController extends Controller
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
-    public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
@@ -34,6 +33,11 @@ class AuthenticatedSessionController extends Controller
         // Si el usuario es Administrador (type_user_id === 2)
         if ($user->type_user_id === 2) {
             return redirect()->route('admin.dashboard');
+        }
+
+        // Si el usuario es Empleado (suponiendo que para empleados, type_user_id >= 3)
+        if ($user->type_user_id >= 3) {  
+            return redirect()->route('employee.dashboard');
         }
 
         // Para otros roles, redirige al dashboard general

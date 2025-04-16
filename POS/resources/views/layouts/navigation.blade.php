@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('superadmin.dashboard') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
@@ -17,11 +17,11 @@
                     @if(Auth::check())
                         @switch(Auth::user()->type_user_id)
                             @case(1)
-                            <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            <x-nav-link :href="route('superadmin.dashboard')" :active="request()->routeIs('superadmin.dashboard')">
                                 {{ __('Dashboard') }}
                             </x-nav-link> 
                                 <!-- Super Administrador: se muestra el enlace Users -->
-                                <x-nav-link :href="route('superadmin.users')" :active="request()->routeIs('superadmin.users')">
+                                <x-nav-link :href="route('superadmin.users.index')" :active="request()->routeIs('superadmin.users.*')">
                                     {{ __('Users') }}
                                 </x-nav-link>
                                 @break
@@ -39,12 +39,9 @@
                             @default
                                 @if(Auth::user()->type_user_id >= 3)
                                     <!-- Empleado -->
-                                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                    <x-nav-link :href="route('empleado.dashboard')" :active="request()->routeIs('empleado.dashboard')">
                                         {{ __('Dashboard') }}
                                     </x-nav-link> 
-                                    <x-nav-link :href="route('dashboard.empleado')" :active="request()->routeIs('dashboard.empleado')">
-                                        {{ __('Empleado') }}
-                                    </x-nav-link>
                                 @endif
                         @endswitch
                     @endif
@@ -101,7 +98,7 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('superadmin.dashboard')" :active="request()->routeIs('superadmin.dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>

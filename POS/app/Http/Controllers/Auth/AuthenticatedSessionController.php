@@ -32,16 +32,16 @@ class AuthenticatedSessionController extends Controller
 
         // Si el usuario es Administrador (type_user_id === 2)
         if ($user->type_user_id === 2) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('administrador.dashboard');
         }
 
         // Si el usuario es Empleado (suponiendo que para empleados, type_user_id >= 3)
         if ($user->type_user_id >= 3) {  
-            return redirect()->route('employee.dashboard');
+            return redirect()->route('empleado.dashboard');
         }
 
         // Para otros roles, redirige al dashboard general
-        return redirect()->intended(route('dashboard', false));
+        return redirect()->intended(route('superadmin.dashboard', false));
     }
 
 

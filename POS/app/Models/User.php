@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'type_user_id',
         'status',
+        'company_id',
     ];
 
     /**
@@ -48,8 +49,16 @@ class User extends Authenticatable
         ];
     }
 
+    // Relación con TypeUser (ya existente)
     public function typeUser()
     {
-        return $this->belongsTo(TypeUser::class, 'type_user_id');
+        return $this->belongsTo(TypeUser::class);
     }
+
+    // ②: Relación con Company
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
+
 }

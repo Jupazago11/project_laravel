@@ -50,6 +50,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/superadmin/users', UsersController::class)
          ->names('superadmin.users');
 
+    // CRUD completo para Company
+    Route::resource('/superadmin/companies', App\Http\Controllers\Superadmin\CompanyController::class)
+    ->names('superadmin.companies');
     /*
     |----------------------------------------------------------------------
     | Rutas de Perfil
@@ -82,4 +85,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/empleado', function () {
         return view('empleado.dashboard');
     })->name('empleado.dashboard');
+
+
+
+        
+
 });

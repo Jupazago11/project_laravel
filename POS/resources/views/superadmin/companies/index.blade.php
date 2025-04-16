@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Users') }}
+            {{ __('Companies') }}
         </h2>
     </x-slot>
 
@@ -13,7 +13,7 @@
                 <!-- Search & Filter -->
                 <div class="flex items-center gap-4 mb-2 sm:mb-0">
                     <!-- Formulario GET para la búsqueda y filtros -->
-                    <form method="GET" action="{{ route('superadmin.users.index') }}" class="flex gap-4">
+                    <form method="GET" action="{{ route('superadmin.companies.index') }}" class="flex gap-4">
                         <!-- Campo de búsqueda -->
                         <div>
                             <input
@@ -21,7 +21,7 @@
                                 name="search"
                                 placeholder="Buscar"
                                 value="{{ $search ?? '' }}"
-                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300" 
+                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300"
                                 onchange="this.form.submit()"
                             />
                         </div>
@@ -34,28 +34,12 @@
                                 onchange="this.form.submit()"
                             >
                                 <option value="">Estado</option>
-                                <option value="1" {{ isset($statusFilter) && $statusFilter == '1' ? 'selected' : '' }}>Activo</option>
-                                <option value="0" {{ isset($statusFilter) && $statusFilter == '0' ? 'selected' : '' }}>Inactivo</option>
+                                <option value="1" {{ (isset($statusFilter) && $statusFilter == '1') ? 'selected' : '' }}>Activo</option>
+                                <option value="0" {{ (isset($statusFilter) && $statusFilter == '0') ? 'selected' : '' }}>Inactivo</option>
                             </select>
                         </div>
 
-                        <!-- Filtro de tipo de usuario -->
-                        <div>
-                            <select
-                                name="type_filter"
-                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300"
-                                onchange="this.form.submit()"
-                            >
-                                <option value="">Tipo de Usuario</option>
-                                @foreach($typeUsers as $t)
-                                    <option value="{{ $t->id }}" {{ (isset($typeFilter) && $typeFilter == $t->id) ? 'selected' : '' }}>
-                                        {{ $t->type }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Botón “Filter” (opcional, ya que onchange envía el form) -->
+                        <!-- Botón “Filtrar” (opcional) -->
                         <div>
                             <button
                                 type="submit"
@@ -65,57 +49,64 @@
                             </button>
                         </div>
                     </form>
-                    <!-- Botón “Nuevo registro” con estilo original de W3CSS -->
+
+                    <!-- Botón “Nuevo registro” -->
                     <div>
-                        <a href="{{ route('superadmin.users.create') }}" class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition">
+                        <a
+                            href="{{ route('superadmin.companies.create') }}"
+                            class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition"
+                        >
                             Nuevo registro
                         </a>
                     </div>
                 </div>
-
-                
             </div>
 
-            <!-- Tabla de Usuarios -->
+            <!-- Tabla de Companies -->
             <div class="overflow-x-auto">
                 <table class="min-w-full text-left border border-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-3 border-b border-gray-200">ID</th>
                             <th class="px-4 py-3 border-b border-gray-200">Name</th>
-                            <th class="px-4 py-3 border-b border-gray-200">Email</th>
-                            <th class="px-4 py-3 border-b border-gray-200">Type</th>
-                            <th class="px-4 py-3 border-b border-gray-200">Company</th>
+                            <th class="px-4 py-3 border-b border-gray-200">NIT</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Address</th>
                             <th class="px-4 py-3 border-b border-gray-200">Status</th>
                             <th class="px-4 py-3 border-b border-gray-200">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @foreach($users as $user)
+                        @foreach($companies as $company)
                             <tr>
-                                <td class="px-4 py-3">{{ $user->id }}</td>
-                                <td class="px-4 py-3">{{ $user->name }}</td>
-                                <td class="px-4 py-3">{{ $user->email }}</td>
-                                <td class="px-4 py-3">{{ $user->typeUser ? $user->typeUser->type : 'N/A' }}</td>
-                                <td class="px-4 py-3">{{ optional($user->company)->name ?? '—' }}</td>
+                                <td class="px-4 py-3">{{ $company->id }}</td>
+                                <td class="px-4 py-3">{{ $company->name }}</td>
+                                <td class="px-4 py-3">{{ $company->nit }}</td>
+                                <td class="px-4 py-3">{{ $company->direction }}</td>
                                 <td class="px-4 py-3">
-                                    @if($user->status == 1)
+                                    @if($company->status == 1)
                                         <span class="text-green-600">Activo</span>
                                     @else
                                         <span class="text-gray-500">Inactivo</span>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3">
-                                    <a href="{{ route('superadmin.users.edit', $user) }}" class="text-blue-500 hover:underline">
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <a
+                                        href="{{ route('superadmin.companies.edit', $company) }}"
+                                        class="text-blue-500 hover:underline"
+                                    >
                                         Editar
                                     </a>
-                                    <form action="{{ route('superadmin.users.destroy', $user) }}" method="POST" class="inline-block ml-2">
+                                    <form
+                                        action="{{ route('superadmin.companies.destroy', $company) }}"
+                                        method="POST"
+                                        class="inline-block ml-2"
+                                        onsubmit="return confirm('¿Está seguro de eliminar esta compañía?')"
+                                    >
                                         @csrf
                                         @method('DELETE')
                                         <button
                                             type="submit"
                                             class="text-red-500 hover:underline"
-                                            onclick="return confirm('¿Está seguro de eliminar este usuario?')"
                                         >
                                             Eliminar
                                         </button>
@@ -129,7 +120,7 @@
 
             <!-- Paginación -->
             <div class="mt-4">
-                {{ $users->links() }}
+                {{ $companies->links() }}
             </div>
         </div>
     </div>

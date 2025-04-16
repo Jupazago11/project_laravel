@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Superadmin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TypeUser;
+use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+
 
 class UsersController extends Controller
 {
@@ -23,7 +26,7 @@ class UsersController extends Controller
         // Construir la consulta base
         $usersQuery = User::with('typeUser')
             // Si deseas excluir superusuarios, ajusta el filtro, por ejemplo: 
-            // ->where('type_user_id', '>', 0)
+            ->where('type_user_id', '>', 1)
             ->orderBy('id', 'asc');
 
         // Filtrar por búsqueda (nombre o email)
@@ -102,7 +105,9 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
-        return view('superadmin.users.edit', compact('user'));
+        $typeUsers  = TypeUser::all();
+        $companies  = Company::all();
+        return view('superadmin.users.edit', compact('user','typeUsers','companies'));
     }
 
     /**
@@ -110,26 +115,33 @@ class UsersController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // Validar los datos
-        $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => "required|email|unique:users,email,{$user->id}",
-            'password' => 'nullable|string|min:6|confirmed',
+        $data = $request->validate([
+            'name'           => ['required','string','max:255'],
+            'email'          => ['required','email','max:255', Rule::unique('users')->ignore($user->id)],
+            'password'       => ['nullable','string','confirmed','min:4'],
+            'type_user_id'   => ['required','exists:type_users,id'],
+            'status'         => ['required','boolean'],
+            'company_id'     => ['nullable','exists:company,id'],
         ]);
 
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-
-        // Sólo actualizar la contraseña si se ingresó un valor
-        if(!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+        // Si viene contraseña: la hasheamos
+        if (!empty($data['password'])) {
+            $user->password = Hash::make($data['password']);
         }
-        
-        $user->save();
+
+        // Asignamos el resto de campos
+        $user->fill([
+            'name'         => $data['name'],
+            'email'        => $data['email'],
+            'type_user_id' => $data['type_user_id'],
+            'status'       => $data['status'],
+            'company_id'   => $data['company_id'],
+        ])->save();
 
         return redirect()->route('superadmin.users.index')
-                         ->with('success', 'Usuario actualizado correctamente.');
+                         ->with('success','Usuario actualizado correctamente.');
     }
+
 
     /**
      * Elimina un usuario.

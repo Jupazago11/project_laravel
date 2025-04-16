@@ -17,13 +17,18 @@
                     @if(Auth::check())
                         @switch(Auth::user()->type_user_id)
                             @case(1)
-                            <x-nav-link :href="route('superadmin.dashboard')" :active="request()->routeIs('superadmin.dashboard')">
-                                {{ __('Dashboard') }}
-                            </x-nav-link> 
+                                <x-nav-link :href="route('superadmin.dashboard')" :active="request()->routeIs('superadmin.dashboard')">
+                                    {{ __('Dashboard') }}
+                                </x-nav-link> 
                                 <!-- Super Administrador: se muestra el enlace Users -->
                                 <x-nav-link :href="route('superadmin.users.index')" :active="request()->routeIs('superadmin.users.*')">
                                     {{ __('Users') }}
                                 </x-nav-link>
+                                <!-- … dentro del switch(Auth::user()->type_user_id) @case(1) … -->
+                                <x-nav-link :href="route('superadmin.companies.index')" :active="request()->routeIs('superadmin.companies.*')">
+                                    {{ __('Companies') }}
+                                </x-nav-link>
+
                                 @break
 
                             @case(2)

@@ -15,36 +15,47 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener los valores de búsqueda y filtro (si existen)
+        // Obtener parámetros de búsqueda y filtros
         $search = $request->input('search');
         $statusFilter = $request->input('status_filter');
+        $typeFilter = $request->input('type_filter');
 
-        // Iniciamos la consulta con la relación typeUser
+        // Construir la consulta base
         $usersQuery = User::with('typeUser')
-            ->where('type_user_id', '>', 0) // Excluimos superusuarios
+            // Si deseas excluir superusuarios, ajusta el filtro, por ejemplo: 
+            // ->where('type_user_id', '>', 0)
             ->orderBy('id', 'asc');
 
-        // Búsqueda por nombre o email
+        // Filtrar por búsqueda (nombre o email)
         if (!empty($search)) {
             $usersQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
-        // Filtro de estado
+        // Filtrar por estado
         if ($statusFilter !== null && $statusFilter !== '') {
             $usersQuery->where('status', $statusFilter);
         }
 
-        // Paginamos
+        // Filtrar por tipo de usuario
+        if ($typeFilter !== null && $typeFilter !== '') {
+            $usersQuery->where('type_user_id', $typeFilter);
+        }
+
+        // Paginación
         $users = $usersQuery->paginate(10);
 
-        // Retornamos la vista con la info necesaria
+        // Obtener la lista de tipos de usuario para el select
+        $typeUsers = TypeUser::all();
+
         return view('superadmin.users.index', [
             'users' => $users,
             'search' => $search,
             'statusFilter' => $statusFilter,
+            'typeFilter' => $typeFilter,
+            'typeUsers' => $typeUsers,
         ]);
     }
 
@@ -68,8 +79,9 @@ class UsersController extends Controller
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            // Puedes validar otros campos, por ejemplo: type_user_id, status, etc.
+            'password' => 'required|string|min:4|confirmed',
+            'type_user_id' => 'required|integer',
+            'status'       => 'required|in:0,1', // 0 o 1
         ]);
 
         // Crear el usuario; recuerda encriptar la contraseña
@@ -77,11 +89,8 @@ class UsersController extends Controller
         $user->name  = $validated['name'];
         $user->email = $validated['email'];
         $user->password = Hash::make($validated['password']);
-        
-        // Puedes establecer otros campos, por ejemplo:
-        // $user->type_user_id = $request->input('type_user_id'); 
-        // Por ejemplo, para registrar un usuario de cualquier tipo, lo definirás según convenga.
-
+        $user->type_user_id = $validated['type_user_id'];
+        $user->status       = $validated['status'];
         $user->save();
 
         return redirect()->route('superadmin.users.index')

@@ -13,17 +13,41 @@ class UsersController extends Controller
     /**
      * Muestra la lista de usuarios.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Cargamos la relación 'typeUser' para acceder a la descripción del tipo
-        // Filtramos para que se excluyan los superusuarios (asumimos que tienen type_user_id == 0)
-        $users = User::with('typeUser')
-                    ->where('type_user_id', '>', 0)
-                    ->orderBy('id', 'asc')
-                    ->paginate(10);
+        // Obtener los valores de búsqueda y filtro (si existen)
+        $search = $request->input('search');
+        $statusFilter = $request->input('status_filter');
 
-        return view('superadmin.users.index', compact('users'));
+        // Iniciamos la consulta con la relación typeUser
+        $usersQuery = User::with('typeUser')
+            ->where('type_user_id', '>', 0) // Excluimos superusuarios
+            ->orderBy('id', 'asc');
+
+        // Búsqueda por nombre o email
+        if (!empty($search)) {
+            $usersQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtro de estado
+        if ($statusFilter !== null && $statusFilter !== '') {
+            $usersQuery->where('status', $statusFilter);
+        }
+
+        // Paginamos
+        $users = $usersQuery->paginate(10);
+
+        // Retornamos la vista con la info necesaria
+        return view('superadmin.users.index', [
+            'users' => $users,
+            'search' => $search,
+            'statusFilter' => $statusFilter,
+        ]);
     }
+
 
     /**
      * Muestra el formulario para crear un nuevo usuario.

@@ -1,93 +1,120 @@
-<x-app-layout> 
+<x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Users') }}
-            </h2>
-            <a href="{{ route('superadmin.users.create') }}" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                Nuevo Usuario
-            </a>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Users') }}
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="mb-4 p-4 bg-green-200 text-green-800 rounded">
-                    {{ session('success') }}
+    <!-- Contenedor Principal -->
+    <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white shadow sm:rounded-lg p-6">
+            <!-- Barra superior: Buscador, Filtro, Botón “Add” -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                <!-- Search & Filter -->
+                <div class="flex items-center gap-4 mb-2 sm:mb-0">
+                    <!-- Form GET para la búsqueda y filtro -->
+                    <form method="GET" action="{{ route('superadmin.users.index') }}" class="flex gap-4">
+                        <!-- Campo de búsqueda -->
+                        <div>
+                            <input
+                                type="text"
+                                name="search"
+                                placeholder="Search..."
+                                value="{{ $search ?? '' }}"
+                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300"
+                            />
+                        </div>
+    
+                        <!-- Filtro de estado -->
+                        <div>
+                            <select
+                                name="status_filter"
+                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300"
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">All Status</option>
+                                <option value="1" {{ isset($statusFilter) && $statusFilter == '1' ? 'selected' : '' }}>Activo</option>
+                                <option value="0" {{ isset($statusFilter) && $statusFilter == '0' ? 'selected' : '' }}>Inactivo</option>
+                            </select>
+                        </div>
+    
+                        <!-- Botón “Filter” (opcional, ya que el onchange envía el form) -->
+                        <div>
+                            <button
+                                type="submit"
+                                class="bg-gray-200 text-gray-700 rounded-md px-4 py-2 hover:bg-gray-300 transition"
+                            >
+                                Filter
+                            </button>
+                        </div>
+                    </form>
+                    <div>
+                    <!-- Mantenemos el botón Add con las clases originales de W3CSS -->
+                    <a href="{{ route('superadmin.users.create') }}" class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition">
+                        Nuevo registro
+                    </a>
                 </div>
-            @endif
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full border border-gray-200 text-gray-800">
-                            <thead class="bg-gray-50 border-b border-gray-200">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        ID
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        Nombre
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        Email
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        Tipo
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        Estado
-                                    </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                                        Acciones
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach($users as $user)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->id }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->name }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $user->email }}</td>
-                                        <!-- Mostrar el tipo de usuario usando la relación -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {{ $user->typeUser ? $user->typeUser->type : 'No asignado' }}
-                                        </td>
-                                        <!-- Mostrar el estado del usuario, usando una lógica simple -->
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            @if($user->status == 1)
-                                                Activo
-                                            @else
-                                                Inactivo
-                                            @endif
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <!-- Enlace para editar usando <img> para icono -->
-                                            <a href="{{ route('superadmin.users.edit', $user) }}" class="inline-flex items-center text-blue-600 hover:underline">
-                                                <img src="https://unpkg.com/heroicons@1.0.6/outline/pencil-alt.svg" alt="Editar" class="h-5 w-5 mr-1">
-                                                Editar
-                                            </a>
-                                            
-                                            <!-- Formulario para eliminar usando <img> para icono -->
-                                            <form action="{{ route('superadmin.users.destroy', $user) }}" method="POST" class="inline-block ml-2">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center text-red-600 hover:underline" onclick="return confirm('¿Estás seguro de eliminar este usuario?')">
-                                                    <img src="https://unpkg.com/heroicons@1.0.6/outline/trash.svg" alt="Eliminar" class="h-5 w-5 mr-1">
-                                                    Eliminar
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Paginación -->
-                    <div class="mt-4">
-                        {{ $users->links() }}
-                    </div>
                 </div>
+    
+
+                
+            </div>
+    
+            <!-- Tabla de Usuarios -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left border border-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 border-b border-gray-200">ID</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Name</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Email</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Tipo</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Status</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @foreach($users as $user)
+                            <tr>
+                                <td class="px-4 py-3">{{ $user->id }}</td>
+                                <td class="px-4 py-3">{{ $user->name }}</td>
+                                <td class="px-4 py-3">{{ $user->email }}</td>
+                                <td class="px-4 py-3">
+                                    {{ $user->typeUser ? $user->typeUser->type : 'N/A' }}
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if($user->status == 1)
+                                        <span class="text-green-600">Activo</span>
+                                    @else
+                                        <span class="text-gray-500">Inactivo</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3">
+                                    <a href="{{ route('superadmin.users.edit', $user) }}"
+                                       class="text-blue-500 hover:underline">
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('superadmin.users.destroy', $user) }}" method="POST" class="inline-block ml-2">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button
+                                            type="submit"
+                                            class="text-red-500 hover:underline"
+                                            onclick="return confirm('¿Está seguro de eliminar este usuario?')"
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+    
+            <!-- Paginación -->
+            <div class="mt-4">
+                {{ $users->links() }}
             </div>
         </div>
     </div>

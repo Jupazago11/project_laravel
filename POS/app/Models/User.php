@@ -24,6 +24,7 @@ class User extends Authenticatable
         'type_user_id',
         'status',
         'company_id',
+        'user_info_id',
     ];
 
     /**
@@ -59,6 +60,11 @@ class User extends Authenticatable
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function info()
+    {
+        return $this->belongsTo(UserInfo::class, 'user_info_id');
     }
 
 }

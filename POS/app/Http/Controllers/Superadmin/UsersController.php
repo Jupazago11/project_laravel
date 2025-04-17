@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\TypeUser;
 use App\Models\Company;
+use App\Models\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
@@ -85,16 +86,22 @@ class UsersController extends Controller
             'password' => 'required|string|min:4|confirmed',
             'type_user_id' => 'required|integer',
             'status'       => 'required|in:0,1', // 0 o 1
+            'company_id'     => 'nullable|exists:company,id',
         ]);
 
-        // Crear el usuario; recuerda encriptar la contraseña
-        $user = new User();
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-        $user->password = Hash::make($validated['password']);
-        $user->type_user_id = $validated['type_user_id'];
-        $user->status       = $validated['status'];
-        $user->save();
+         // 2) Crear un registro vacío en user_info (todos los campos son nullable)
+        $info = UserInfo::create([]);
+
+        // 3) Crear el usuario y asignarle el user_info_id recién creado
+        $user = User::create([
+            'name'           => $validated['name'],
+            'email'          => $validated['email'],
+            'password'       => Hash::make($validated['password']),
+            'type_user_id'   => $validated['type_user_id'],
+            'status'         => $validated['status'],
+            'company_id'     => $validated['company_id'] ?? null,
+            'user_info_id'   => $info->id,
+        ]);
 
         return redirect()->route('superadmin.users.index')
                          ->with('success', 'Usuario creado correctamente.');

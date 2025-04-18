@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Superadmin\UsersController; // Asegúrate de usar el namespace correcto.
+use App\Http\Controllers\Superadmin\UsersController as SuperUsersController;
+use App\Http\Controllers\Superadmin\CompanyController;
+use App\Http\Controllers\Administrador\UsersController as AdminUsersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -9,85 +11,72 @@ use Illuminate\Support\Facades\Route;
 | Rutas Públicas
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/info', function () {
-    return view('info');
-});
+Route::get('/', fn() => view('welcome'));
+Route::get('/info', fn() => view('info'));
 
 /*
 |--------------------------------------------------------------------------
-| Rutas de Autenticación
+| Autenticación (login, register, etc.)
 |--------------------------------------------------------------------------
 */
 require __DIR__.'/auth.php';
 
 /*
 |--------------------------------------------------------------------------
-| Rutas Protegidas (Usuarios Autenticados)
+| Rutas Protegidas (solo usuarios autenticados y verificados)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth','verified'])->group(function(){
 
     /*
-    |----------------------------------------------------------------------
-    | Dashboard Genérico (Superadmin Dashboard)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Superadmin (type_user_id === 1)
+    |--------------------------------------------------------------------------
     */
-    Route::get('/dashboard/superadmin', function () {
-        return view('superadmin.dashboard');
-    })->name('superadmin.dashboard');
-
-    /*
-    |----------------------------------------------------------------------
-    | Módulo "Users" para Superadmin (CRUD completo)
-    |----------------------------------------------------------------------
-    | Se define una ruta resource para manejar todo el CRUD. Esto generará
-    | rutas como 'superadmin.users.index', 'superadmin.users.create', etc.
-    */
-    Route::resource('/superadmin/users', UsersController::class)
-         ->names('superadmin.users');
-
-    // CRUD completo para Company
-    Route::resource('/superadmin/companies', App\Http\Controllers\Superadmin\CompanyController::class)
-    ->names('superadmin.companies');
-    /*
-    |----------------------------------------------------------------------
-    | Rutas de Perfil
-    |----------------------------------------------------------------------
-    */
-    Route::prefix('profile')->group(function () {
-        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('superadmin')
+         ->name('superadmin.')
+         ->group(function(){
+        Route::get('dashboard', fn() => view('superadmin.dashboard'))
+             ->name('dashboard');
+        Route::resource('users',     SuperUsersController::class)
+             ->names('users');
+        Route::resource('companies', CompanyController::class)
+             ->names('companies');
     });
 
     /*
-    |----------------------------------------------------------------------
-    | Rutas para Administradores (type_user_id === 2)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Administrador (type_user_id === 2)
+    |--------------------------------------------------------------------------
     */
-    Route::get('/dashboard/administrador', function () {
-        return view('administrador.dashboard');
-    })->name('administrador.dashboard');
-
-    Route::get('/administrador/users', function () {
-        return view('administrador.users');
-    })->name('administrador.users');
+    Route::prefix('administrador')
+         ->name('administrador.')
+         ->group(function(){
+        Route::get('dashboard', fn() => view('administrador.dashboard'))
+             ->name('dashboard');
+        Route::resource('users', AdminUsersController::class)
+             ->names('users');
+    });
 
     /*
-    |----------------------------------------------------------------------
-    | Rutas para Empleados (type_user_id >= 3)
-    |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Empleado (type_user_id >= 3)
+    |--------------------------------------------------------------------------
     */
-    Route::get('/dashboard/empleado', function () {
-        return view('empleado.dashboard');
-    })->name('empleado.dashboard');
+    Route::get('dashboard/empleado', fn() => view('empleado.dashboard'))
+         ->name('empleado.dashboard');
 
-
-
-        
+    /*
+    |--------------------------------------------------------------------------
+    | Perfil (todos los usuarios)
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('profile')
+         ->name('profile.')
+         ->group(function(){
+        Route::get('/',    [ProfileController::class,'edit'])->name('edit');
+        Route::patch('/',  [ProfileController::class,'update'])->name('update');
+        Route::delete('/', [ProfileController::class,'destroy'])->name('destroy');
+    });
 
 });

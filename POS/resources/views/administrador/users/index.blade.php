@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Useddrs') }}
+            {{ Auth::user()->typeUser->type }}
         </h2>
     </x-slot>
 
@@ -13,7 +13,7 @@
                 <!-- Search & Filter -->
                 <div class="flex items-center gap-4 mb-2 sm:mb-0">
                     <!-- Formulario GET para la búsqueda y filtros -->
-                    <form method="GET" action="{{ route('superadmin.users.index') }}" class="flex gap-4">
+                    <form method="GET" action="{{ route('administrador.users.index') }}" class="flex gap-4">
                         <!-- Campo de búsqueda -->
                         <div>
                             <input
@@ -67,7 +67,7 @@
                     </form>
                     <!-- Botón “Nuevo registro” con estilo original de W3CSS -->
                     <div>
-                        <a href="{{ route('superadmin.users.create') }}" class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition">
+                        <a href="{{ route('administrador.users.create') }}" class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition">
                             Nuevo registro
                         </a>
                     </div>
@@ -106,10 +106,10 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3">
-                                    <a href="{{ route('superadmin.users.edit', $user) }}" class="text-blue-500 hover:underline">
+                                    <a href="{{ route('administrador.users.edit', $user) }}" class="text-blue-500 hover:underline">
                                         Editar
                                     </a>
-                                    <form action="{{ route('superadmin.users.destroy', $user) }}" method="POST" class="inline-block ml-2">
+                                    <form action="{{ route('administrador.users.destroy', $user) }}" method="POST" class="inline-block ml-2">
                                         @csrf
                                         @method('DELETE')
                                         <button

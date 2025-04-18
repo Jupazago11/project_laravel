@@ -19,49 +19,56 @@ class UsersController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener parámetros de búsqueda y filtros
-        $search = $request->input('search');
-        $statusFilter = $request->input('status_filter');
-        $typeFilter = $request->input('type_filter');
+        // 1) Obtener parámetros de búsqueda y filtros
+        $search        = $request->input('search');
+        $statusFilter  = $request->input('status_filter');
+        $typeFilter    = $request->input('type_filter');
+        $companyFilter = $request->input('company_filter');
 
-        // Construir la consulta base
-        $usersQuery = User::with('typeUser')
-            // Si deseas excluir superusuarios, ajusta el filtro, por ejemplo: 
+        // 2) Construir la consulta base (excluyendo superadmins)
+        $usersQuery = User::with('typeUser', 'company')
             ->where('type_user_id', '>', 1)
             ->orderBy('id', 'asc');
 
-        // Filtrar por búsqueda (nombre o email)
+        // 3) Aplicar filters si vienen
         if (!empty($search)) {
             $usersQuery->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
-        // Filtrar por estado
         if ($statusFilter !== null && $statusFilter !== '') {
             $usersQuery->where('status', $statusFilter);
         }
 
-        // Filtrar por tipo de usuario
         if ($typeFilter !== null && $typeFilter !== '') {
             $usersQuery->where('type_user_id', $typeFilter);
         }
 
-        // Paginación
+        // Solo filtrar por compañía si se seleccionó una concreta
+        if ($companyFilter !== null && $companyFilter !== '') {
+            $usersQuery->where('company_id', $companyFilter);
+        }
+
+        // 4) Paginación
         $users = $usersQuery->paginate(10);
 
-        // Obtener la lista de tipos de usuario para el select
+        // 5) Listas para los selects
         $typeUsers = TypeUser::all();
+        $companies = Company::all();
 
         return view('superadmin.users.index', [
-            'users' => $users,
-            'search' => $search,
-            'statusFilter' => $statusFilter,
-            'typeFilter' => $typeFilter,
-            'typeUsers' => $typeUsers,
+            'users'         => $users,
+            'search'        => $search,
+            'statusFilter'  => $statusFilter,
+            'typeFilter'    => $typeFilter,
+            'companyFilter' => $companyFilter,
+            'typeUsers'     => $typeUsers,
+            'companies'     => $companies,
         ]);
     }
+
 
 
     /**

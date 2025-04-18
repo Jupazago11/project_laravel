@@ -30,7 +30,7 @@
                         <div>
                             <select
                                 name="status_filter"
-                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300"
+                                class="block w-full border border-gray-300 rounded-md py-2 pl-3 pr-8 focus:outline-none focus:ring focus:ring-blue-300 appearance-none"
                                 onchange="this.form.submit()"
                             >
                                 <option value="">Estado</option>
@@ -43,13 +43,30 @@
                         <div>
                             <select
                                 name="type_filter"
-                                class="border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring focus:ring-blue-300"
+                                class="block w-full border border-gray-300 rounded-md py-2 pl-3 pr-8 focus:outline-none focus:ring focus:ring-blue-300 appearance-none"
                                 onchange="this.form.submit()"
                             >
                                 <option value="">Tipo de Usuario</option>
                                 @foreach($typeUsers as $t)
                                     <option value="{{ $t->id }}" {{ (isset($typeFilter) && $typeFilter == $t->id) ? 'selected' : '' }}>
                                         {{ $t->type }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Filtro de company -->
+                        <div>
+                            <select
+                                name="company_filter"
+                                class="block w-full border border-gray-300 rounded-md py-2 pl-3 pr-8 focus:outline-none focus:ring focus:ring-blue-300 appearance-none"
+                                onchange="this.form.submit()"
+                            >
+                                <option value="">Todas las empresas</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->id }}"
+                                        {{ (isset($companyFilter) && $companyFilter == $company->id) ? 'selected' : '' }}>
+                                        {{ $company->name }}
                                     </option>
                                 @endforeach
                             </select>

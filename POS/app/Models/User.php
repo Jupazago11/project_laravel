@@ -67,4 +67,6 @@ class User extends Authenticatable
         return $this->belongsTo(UserInfo::class, 'user_info_id');
     }
 
+    
+
 }

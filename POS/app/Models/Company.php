@@ -16,8 +16,9 @@ class Company extends Model
     ];
 
     // relación inversa: una company tiene muchos users
-    public function users()
-    {
-        return $this->hasMany(User::class);
-    }
+    public function users()     { return $this->hasMany(User::class); }
+    public function products()  { return $this->hasMany(Product::class); }
+    public function categories(){ return $this->hasMany(Category::class); }
+    public function providers() { return $this->hasMany(Provider::class); }
+
 }

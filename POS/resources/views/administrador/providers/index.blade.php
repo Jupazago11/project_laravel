@@ -5,7 +5,6 @@
         </h2>
     </x-slot>
 
-    <!-- Contenedor Principal -->
     <div class="py-12 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white shadow sm:rounded-lg p-6">
             <!-- Barra superior: Buscador, Filtro y Botón “Nuevo registro” -->
@@ -53,13 +52,13 @@
                         </div>
                     </form>
                     <div>
-                    <a
-                        href="{{ route('administrador.providers.create') }}"
-                        class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition"
-                    >
-                        {{ __('Nuevo proveedor') }}
-                    </a>
-                </div>
+                        <a
+                            href="{{ route('administrador.providers.create') }}"
+                            class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition"
+                        >
+                            {{ __('Nuevo proveedor') }}
+                        </a>
+                    </div>
                 </div>
 
                 
@@ -105,18 +104,6 @@
                                     >
                                         {{ __('Editar') }}
                                     </a>
-                                    <form
-                                        action="{{ route('administrador.providers.destroy', $provider) }}"
-                                        method="POST"
-                                        class="inline-block"
-                                        onsubmit="return confirm('{{ __('¿Está seguro de eliminar este proveedor?') }}')"
-                                    >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:underline">
-                                            {{ __('Eliminar') }}
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

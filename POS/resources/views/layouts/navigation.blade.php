@@ -38,6 +38,12 @@
                                 <x-nav-link :href="route('administrador.providers.index')" :active="request()->routeIs('administrador.providers.*')">
                                     {{ __('Proveedores') }}
                                 </x-nav-link>
+                                <x-nav-link :href="route('administrador.categories.index')" :active="request()->routeIs('administrador.categories.*')">
+                                    {{ __('Categorias') }}
+                                </x-nav-link>
+                                <x-nav-link :href="route('administrador.products.index')" :active="request()->routeIs('administrador.products.*')">
+                                    {{ __('Productos') }}
+                                </x-nav-link>
                                 @break
 
                             @default

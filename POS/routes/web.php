@@ -4,7 +4,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Superadmin\UsersController as SuperUsersController;
 use App\Http\Controllers\Superadmin\CompanyController;
 use App\Http\Controllers\Administrador\UsersController as AdminUsersController;
+use App\Http\Controllers\Administrador\ProductController;
 use App\Http\Controllers\Administrador\ProviderController;
+use App\Http\Controllers\Administrador\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,6 +61,10 @@ Route::middleware(['auth','verified'])->group(function(){
                ->names('users');
           Route::resource('providers', ProviderController::class)
                ->names('providers');
+          Route::resource('categories', CategoryController::class)
+               ->names('categories');
+          Route::resource('products', ProductController::class)
+               ->names('products');
     });
 
     /*

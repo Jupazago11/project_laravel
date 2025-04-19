@@ -109,17 +109,6 @@
                                     <a href="{{ route('administrador.users.edit', $user) }}" class="text-blue-500 hover:underline">
                                         Editar
                                     </a>
-                                    <form action="{{ route('administrador.users.destroy', $user) }}" method="POST" class="inline-block ml-2">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button
-                                            type="submit"
-                                            class="text-red-500 hover:underline"
-                                            onclick="return confirm('¿Está seguro de eliminar este usuario?')"
-                                        >
-                                            Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Superadmin\UsersController as SuperUsersController;
 use App\Http\Controllers\Superadmin\CompanyController;
 use App\Http\Controllers\Administrador\UsersController as AdminUsersController;
+use App\Http\Controllers\Administrador\ProviderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,10 +53,12 @@ Route::middleware(['auth','verified'])->group(function(){
     Route::prefix('administrador')
          ->name('administrador.')
          ->group(function(){
-        Route::get('dashboard', fn() => view('administrador.dashboard'))
-             ->name('dashboard');
-        Route::resource('users', AdminUsersController::class)
-             ->names('users');
+          Route::get('dashboard', fn() => view('administrador.dashboard'))
+               ->name('dashboard');
+          Route::resource('users', AdminUsersController::class)
+               ->names('users');
+          Route::resource('providers', ProviderController::class)
+               ->names('providers');
     });
 
     /*

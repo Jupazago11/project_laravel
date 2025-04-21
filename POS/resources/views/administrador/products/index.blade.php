@@ -102,10 +102,7 @@
                             {{ __('Filtrar') }}
                         </button>
                     </div>
-                </form>
-
-                <!-- Botón Nuevo Registro -->
-                <div>
+                    <div>
                     <a
                         href="{{ route('administrador.products.create') }}"
                         class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition"
@@ -113,6 +110,10 @@
                         {{ __('Nuevo registro') }}
                     </a>
                 </div>
+                </form>
+
+                <!-- Botón Nuevo Registro -->
+                
             </div>
 
             <!-- Tabla de Productos -->
@@ -120,9 +121,9 @@
                 <table class="min-w-full text-left border border-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-4 py-3 border-b border-gray-200">ID</th>
                             <th class="px-4 py-3 border-b border-gray-200">Código</th>
                             <th class="px-4 py-3 border-b border-gray-200">Nombre</th>
+                            <th class="px-4 py-3 border-b border-gray-200">Precio de venta</th>
                             <th class="px-4 py-3 border-b border-gray-200">Categoría</th>
                             <th class="px-4 py-3 border-b border-gray-200">Proveedor</th>
                             <th class="px-4 py-3 border-b border-gray-200">Inventario</th>
@@ -133,9 +134,9 @@
                     <tbody class="divide-y divide-gray-100">
                         @foreach($products as $product)
                             <tr>
-                                <td class="px-4 py-3">{{ $product->id }}</td>
                                 <td class="px-4 py-3">{{ $product->product_code }}</td>
                                 <td class="px-4 py-3">{{ $product->name }}</td>
+                                <td class="px-4 py-3">${{ number_format($product->price_1, 0, ',', '.') }}</td>
                                 <td class="px-4 py-3">{{ optional($product->category)->name ?? '—' }}</td>
                                 <td class="px-4 py-3">{{ optional($product->provider)->name ?? '—' }}</td>
                                 <td class="px-4 py-3">
@@ -159,18 +160,6 @@
                                     >
                                         Editar
                                     </a>
-                                    <form
-                                        action="{{ route('administrador.products.destroy', $product) }}"
-                                        method="POST"
-                                        class="inline-block"
-                                        onsubmit="return confirm('¿Seguro que deseas eliminar este producto?');"
-                                    >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-500 hover:underline">
-                                            Eliminar
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                         @endforeach

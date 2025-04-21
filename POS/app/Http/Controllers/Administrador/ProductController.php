@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administrador;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rule;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Provider;
@@ -12,6 +13,12 @@ use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    protected function authorizeCompany(Product $product)
+    {
+        if ($product->company_id !== Auth::user()->company_id) {
+            abort(403, 'No tienes permiso para manipular este producto.');
+        }
+    }
     public function index(Request $request)
     {
         // 1) Leer los parámetros de entrada
@@ -114,10 +121,16 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'product_code'    => 'nullable|string|max:50',
+            'product_code'    => [
+                'nullable',
+                'string',
+                'max:50',
+                
+                Rule::unique('products', 'product_code'),
+            ],
             'name'            => 'required|string|max:150',
             'description'     => 'nullable|string',
-            'category_id'     => 'required|exists:categories,id',
+            'category_id'     => 'required|exists:category,id',
             'provider_id'     => 'required|exists:providers,id',
             'cost'            => 'required|numeric|min:0',
             'iva_rate_id'     => 'required|exists:iva_rates,id',
@@ -127,12 +140,15 @@ class ProductController extends Controller
             'price_3'         => 'nullable|numeric|min:0',
             'track_inventory' => 'boolean',
             'stock'           => 'nullable|integer|min:0',
-            'status'          => 'required|in:0,1',
+            // ya no validas status aquí
         ]);
 
         // siempre asigna al product la misma empresa del usuario que crea
         $data['company_id']     = Auth::user()->company_id;
         $data['track_inventory'] = $request->has('track_inventory');
+        
+        // fuerza el status a 1 (activo)
+        $data['status'] = 1;
 
         Product::create($data);
 
@@ -145,42 +161,58 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $this->authorize('view', $product); // o comprueba company_id
+        // 1) Verifico company_id
+        $this->authorizeCompany($product);
+
+        // 2) Cargo datos para el formulario
         $companyId  = Auth::user()->company_id;
-        $categories = Category::where('company_id',$companyId)->get();
-        $providers  = Provider::where('company_id',$companyId)->get();
+        $categories = Category::where('company_id', $companyId)->get();
+        $providers  = Provider::where('company_id', $companyId)->get();
         $ivaRates   = IvaRate::all();
 
-        return view('administrador.products.edit', compact('product','categories','providers','ivaRates'));
+        return view('administrador.products.edit', compact(
+            'product','categories','providers','ivaRates'
+        ));
     }
 
     public function update(Request $request, Product $product)
     {
-        $this->authorize('update', $product);
+        $this->authorizeCompany($product);
 
-        $data = $request->validate([
-            'product_code'   => 'nullable|string|max:50',
-            'name'           => 'required|string|max:150',
-            'description'    => 'nullable|string',
-            'category_id'    => 'required|exists:categories,id',
-            'provider_id'    => 'required|exists:providers,id',
-            'cost'           => 'required|numeric|min:0',
-            'iva_rate_id'    => 'required|exists:iva_rates,id',
-            'additional_tax' => 'nullable|numeric|min:0',
-            'price_1'        => 'required|numeric|min:0',
-            'price_2'        => 'nullable|numeric|min:0',
-            'price_3'        => 'nullable|numeric|min:0',
-            'track_inventory'=> 'boolean',
-            'stock'          => 'nullable|integer|min:0',
-            'status'         => 'required|in:0,1',
+        // 1) Forzamos track_inventory a 0 o 1
+        $request->merge([
+            'track_inventory' => (int) $request->input('track_inventory', 0),
         ]);
 
-        $data['track_inventory'] = $request->has('track_inventory');
+        // 2) Validamos incluyendo ese campo
+        $data = $request->validate([
+            'product_code'    => 'nullable|string|max:50',
+            'name'            => 'required|string|max:150',
+            'description'     => 'nullable|string',
+            'category_id'     => 'required|exists:category,id',
+            'provider_id'     => 'required|exists:providers,id',
+            'cost'            => 'required|numeric|min:0',
+            'iva_rate_id'     => 'required|exists:iva_rates,id',
+            'additional_tax'  => 'nullable|numeric|min:0',
+            'price_1'         => 'required|numeric|min:0',
+            'price_2'         => 'nullable|numeric|min:0',
+            'price_3'         => 'nullable|numeric|min:0',
+            'track_inventory' => 'required|integer|in:0,1',
+            'stock'           => 'nullable|integer|min:0',
+            // si status debe ser siempre 1, remuévelo de aquí y fílalo abajo
+        ]);
+
+        // 3) Fuerza el status si lo necesitas
+        $data['status'] = 1;
+
+        // 4) Actualizas sin volver a tocar track_inventory
         $product->update($data);
 
-        return redirect()->route('administrador.products.index')
-                         ->with('success','Producto actualizado correctamente.');
+        return redirect()
+            ->route('administrador.products.index')
+            ->with('success','Producto actualizado correctamente.');
     }
+
 
     public function destroy(Product $product)
     {

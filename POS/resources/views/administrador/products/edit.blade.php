@@ -105,7 +105,7 @@
                                 name="inc_rate"
                                 step="1.00"
                                 id="inc"
-                                value="{{ old('inc_rate', $product->inc_rate) }}"
+                                value="{{ old('inc_rate', (int) $product->inc_rate) }}"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -128,7 +128,7 @@
                                 name="additional_tax"
                                 step="1.00"
                                 id="additional_tax"
-                                value="{{ old('additional_tax', $product->additional_tax) }}"
+                                value="{{ old('additional_tax', (int) $product->additional_tax) }}"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -172,7 +172,7 @@
                                 name="cost"
                                 step="1.00"
                                 id="cost"
-                                value="{{ old('cost', $product->cost) }}"
+                                value="{{ old('cost', (int) $product->cost) }}"
                                 required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                             />
@@ -205,7 +205,7 @@
                                 type="number"
                                 name="price_1"
                                 step="1.00"
-                                value="{{ old('price_1', $product->price_1) }}"
+                                value="{{ old('price_1', (int) $product->price_1) }}"
                                 required
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                             />
@@ -254,7 +254,7 @@
                                 type="number"
                                 name="price_2"
                                 step="1.00"
-                                value="{{ old('price_2', $product->price_2) }}"
+                                value="{{ old('price_2', (int) $product->price_2) }}"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -275,7 +275,7 @@
                                 type="number"
                                 name="stock"
                                 id="stock"
-                                value="{{ old('stock', $product->stock) }}"
+                                value="{{ old('stock', (int) $product->stock) }}"
                                 class="mt-1 block w-full border-gray-300 rounded-md"
                             />
                             @error('stock')
@@ -290,7 +290,7 @@
                                 type="number"
                                 name="price_3"
                                 step="1.00"
-                                value="{{ old('price_3', $product->price_3) }}"
+                                value="{{ old('price_3', (int) $product->price_3) }}"
                                 class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -309,7 +309,12 @@
             </div>
         </div>
     </div>
+
+    
+
 </x-app-layout>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   // Campos base
@@ -326,10 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const profit2Input     = document.getElementById('profit_2');
   const price3Input      = document.querySelector('input[name="price_3"]');
   const profit3Input     = document.getElementById('profit_3');
-
-  // Inventario
-  const trackInventory   = document.getElementById('track_inventory');
-  const stockInput       = document.getElementById('stock');
 
   // Obtiene el % de IVA desde data-rate del radio seleccionado
   function getIvaPercent() {
@@ -383,10 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Habilita o deshabilita edición de stock según checkbox
-  function toggleStockEditable() {
-    stockInput.readOnly = !trackInventory.checked;
-  }
 
   // Listeners
   costInput.addEventListener('input',      calculateAll);
@@ -398,10 +395,10 @@ document.addEventListener('DOMContentLoaded', () => {
   price2Input.addEventListener('input',    calculateAll);
   price3Input.addEventListener('input',    calculateAll);
 
-  trackInventory.addEventListener('change', toggleStockEditable);
+
 
   // Inicializar estado al cargar la página
-  toggleStockEditable();
+
   calculateAll();
 });
 </script>

@@ -158,7 +158,7 @@
             <div class="col-span-2 col-start-3">
                 <label class="block text-gray-700">Precio de Venta 1</label>
                 <input
-                    type="number" name="price_1" step="1.00"
+                    type="number" name="price_1" step="1"
                     value="{{ old('price_1', '0') }}"
                     required
                     class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"

@@ -5,6 +5,8 @@ use App\Http\Controllers\Superadmin\UsersController as SuperUsersController;
 use App\Http\Controllers\Superadmin\CompanyController;
 use App\Http\Controllers\Administrador\UsersController as AdminUsersController;
 use App\Http\Controllers\Administrador\ProductController;
+use App\Http\Controllers\Administrador\ClientController as AdminClientController;
+use App\Http\Controllers\Administrador\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Administrador\ProviderController;
 use App\Http\Controllers\Administrador\CategoryController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +67,28 @@ Route::middleware(['auth','verified'])->group(function(){
                ->names('categories');
           Route::resource('products', ProductController::class)
                ->names('products');
+          Route::resource('clients', AdminClientController::class)
+               ->names('clients');
+
+          Route::resource('payments/{client}', AdminPaymentController::class)
+               ->names('payments');
+               Route::get('payments/{client}', [AdminPaymentController::class, 'index'])
+               ->name('payments.index');
+      
+          Route::get('payments/{client}/create', [AdminPaymentController::class, 'create'])
+               ->name('payments.create');
+      
+          Route::post('payments/{client}', [AdminPaymentController::class, 'store'])
+               ->name('payments.store');
+      
+          Route::get('payments/{client}/{payment}/edit', [AdminPaymentController::class, 'edit'])
+               ->name('payments.edit');
+      
+          Route::put('payments/{client}/{payment}', [AdminPaymentController::class, 'update'])
+               ->name('payments.update');
+      
+          Route::delete('payments/{client}/{payment}', [AdminPaymentController::class, 'destroy'])
+               ->name('payments.destroy');
     });
 
     /*

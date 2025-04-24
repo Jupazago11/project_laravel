@@ -199,11 +199,10 @@ class ProductController extends Controller
             'price_3'         => 'nullable|numeric|min:0',
             'track_inventory' => 'required|integer|in:0,1',
             'stock'           => 'nullable|integer|min:0',
-            // si status debe ser siempre 1, remuévelo de aquí y fílalo abajo
+            'status'          => 'required|boolean',
         ]);
 
-        // 3) Fuerza el status si lo necesitas
-        $data['status'] = 1;
+
 
         // 4) Actualizas sin volver a tocar track_inventory
         $product->update($data);

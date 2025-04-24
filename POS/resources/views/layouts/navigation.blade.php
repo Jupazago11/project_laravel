@@ -44,6 +44,9 @@
                                 <x-nav-link :href="route('administrador.products.index')" :active="request()->routeIs('administrador.products.*')">
                                     {{ __('Productos') }}
                                 </x-nav-link>
+                                <x-nav-link :href="route('administrador.clients.index')" :active="request()->routeIs('administrador.clients.*')">
+                                    {{ __('Clientes') }}
+                                </x-nav-link>
                                 @break
 
                             @default
